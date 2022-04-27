@@ -5,12 +5,18 @@ shopt -s dotglob nullglob
 # Get the filenames
 if [[ ${1-} = - ]]; then
 	readarray -t src # stdin
-	exec </dev/tty   # Reconnect terminal to stdin after reading
 elif (( $# > 0 )); then
 	src=("$@") # args
 else
 	src=(*) # current dir
 fi
+
+# If stdin is not a terminal, reconnect the terminal to it. Useful in two cases:
+#   1. Filenames were read from stdin.
+#   2. User forgot to specify '-' to indicate that filenames are on stdin.
+# In any case, if we don't reconnect the terminal to stdin - `vi` will fuck up
+# the terminal and `mv` won't ask for confirmation despite the '-i' option.
+[[ -t 0 ]] || exec </dev/tty
 
 # Exit if no filenames found
 (( ${#src[@]} )) || { echo "No files to rename."; exit 1; }
