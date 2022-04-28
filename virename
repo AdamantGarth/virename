@@ -30,7 +30,6 @@ trap "rm -f '$tmp'" EXIT
 printf '%s\n' "${src[@]}" > "$tmp"
 
 # Open an $EDITOR or vi to edit the filenames.
-# Reconnect tty to the editor in case we read filenames from stdin
 ${EDITOR:-vi} "$tmp"
 
 # Read the edited filenames back
